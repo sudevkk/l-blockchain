@@ -11,7 +11,7 @@ import (
 type Block struct {
 	Timestamp     int64
 	PrevBlockHash []byte
-	Data          []byte
+	Transactions  []Transaction
 	Nounce        int64
 	Hash          []byte
 }
@@ -23,12 +23,13 @@ func (b *Block) Serialize() []byte {
 	return result.Bytes()
 }
 
-func NewGenesysBlock() *Block {
-	return NewBlock("Genesys Block", []byte{})
+func NewGenesysBlock(address string) *Block {
+	coinbase := NewCoinbaseTX(address, "")
+	return NewBlock([]Transaction{coinbase}, []byte{})
 }
 
-func NewBlock(data string, prevBlockHash []byte) *Block {
-	b := &Block{Timestamp: time.Now().UTC().Unix(), Data: []byte(data), PrevBlockHash: prevBlockHash}
+func NewBlock(tx []*Transaction, prevBlockHash []byte) *Block {
+	b := &Block{Timestamp: time.Now().UTC().Unix(), Transactions: tx.prepareData(), PrevBlockHash: prevBlockHash}
 	pow := MakeNewPOW(b)
 	pow.Mine()
 	return pow.b
