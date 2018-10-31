@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha256"
+
 	//"fmt"
 	"math"
 	"math/big"
@@ -16,7 +17,7 @@ type POW struct {
 }
 
 func (pow *POW) generateHash(nounce int64) []byte {
-	joined := [][]byte{IntToHex(pow.b.Timestamp), pow.b.PrevBlockHash, pow.b.Data, IntToHex(nounce)}
+	joined := [][]byte{IntToHex(pow.b.Timestamp), pow.b.PrevBlockHash, pow.b.generateTransactionsHash(), IntToHex(nounce)}
 	hash := sha256.Sum256(bytes.Join(joined, []byte{}))
 	return hash[:]
 }
